@@ -21,17 +21,42 @@ NUMCHANNEL=3
 clientname="multichannel"
 servername=None
 
+#rcf-3
 SYSTEMPLAYBACK1='system:playback_1'
 SYSTEMPLAYBACK2='system:playback_2'
 
 SYSTEMCAPTURE1='system:capture_1'
 SYSTEMCAPTURE2='system:capture_2'
 
+#other sites
+#SYSTEMPLAYBACK1='Audio interno Stereo analogico:playback_FL'
+#SYSTEMPLAYBACK2='Audio interno Stereo analogico:playback_FR'
+#
+#SYSTEMCAPTURE1='Audio interno Stereo analogico:capture_FL'
+#SYSTEMCAPTURE2='Audio interno Stereo analogico:capture_FR'
+
+
 ##################################
 
 NUMTRACK=NUMCHANNEL*2
 idmix1=NUMTRACK
 idmix2=NUMTRACK+1
+
+dab_left_ports=(
+    'daber:left'
+    ,'dablo:left'
+    ,'dabto:left'
+)
+dab_right_ports=(
+    'daber:right'
+    ,'dablo:right'
+    ,'dabto:right'
+)
+
+dab_ports=[]
+for i in range(NUMCHANNEL):
+    dab_ports.append(dab_left_ports[i])
+    dab_ports.append(dab_right_ports[i])
 
 client = jack.Client(clientname, servername=servername)
 
@@ -134,11 +159,11 @@ def shutdown(status, reason):
     q.put(None)
 
 def connect_monochannel():
-
+    
     # diconnect output channels
     for i in range(NUMTRACK):
         try:
-            client.outports[i].disconnect()
+            client.outports[i].disconnect(dab_ports[i])
         except:
             pass
         
@@ -177,11 +202,17 @@ def connect_monochannel():
 
 
 def connect_multichannel():
-        
-    # disconnect channels
-    for i in range(NUMTRACK):
+
+    # diconnect output mixer
+    for dab_left_port in dab_left_ports:
         try:
-            client.outports[i].disconnect()
+            client.outports[idmix1].disconnect(dab_left_port)
+        except:
+            pass
+
+    for dab_right_port in dab_right_ports:
+        try:
+            client.outports[idmix2].disconnect(dab_right_port)
         except:
             pass
 
@@ -404,7 +435,7 @@ with client:
                     connectmixer()
                     
                 status.multichannel_status=multichannel
-                dabconnect=False
+                status.dabconnect=False
             
     except KeyboardInterrupt:
         print('\nInterrupted by user')
