@@ -1,0 +1,69 @@
+#!/usr/bin/python
+# GPL. (C) 2007-2025 Paolo Patruno.
+
+# This program is free software; you can redistribute it and/or modify 
+# it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation; either version 2 of the License, or 
+# (at your option) any later version. 
+# 
+# This program is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+# GNU General Public License for more details. 
+# 
+# You should have received a copy of the GNU General Public License 
+# along with this program; if not, write to the Free Software 
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+# 
+
+from autoradio import daemon
+from autoradio import settings
+import os
+
+multichanneld = daemon.Daemon(
+        stdin="/dev/null",
+        stdout="/tmp/multichanneld.log",
+        stderr="/tmp/multichanneld.err",
+        pidfile="/tmp/multichanneld.lock",
+        user=settings.userjack,
+        group=settings.groupjack
+)
+
+def main(self):
+
+    import subprocess
+
+    # https://stackoverflow.com/questions/6943208/activate-a-virtualenv-with-a-python-script
+    
+    # Path to a Python interpreter that runs any Python script
+    # under the virtualenv /path/to/virtualenv/
+    python_bin = "/usr/local/bin/jack_client/bin/python"
+
+    # Path to the script that must run under the virtualenv
+    script_file = "/usr/local/bin/jack_client/multichannel.py"
+
+    my_env = os.environ.copy()
+    my_env["PYTHONUNBUFFERED"]="True"
+    
+    self.procs=[
+        subprocess.Popen(["a2jmidid", "--e"],cwd=self.cwd),
+        subprocess.Popen([python_bin, script_file],cwd=self.cwd,env=my_env,text=True,bufsize=1)
+    ]
+
+if __name__ == '__main__':
+
+    import sys, os
+    multichanneld.cwd=os.getcwd()
+
+    if multichanneld.service():
+
+        sys.stdout.write("Daemon started with pid %d\n" % os.getpid())
+        sys.stdout.write("Daemon stdout output\n")
+        sys.stderr.write("Daemon stderr output\n")
+
+        main(multichanneld)  # (this code was run as script)
+
+        for proc in multichanneld.procs:
+            proc.wait()
+
+        sys.exit(0)
