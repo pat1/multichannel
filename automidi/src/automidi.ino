@@ -68,8 +68,8 @@ void setup() {
   pixels.show();  
   delay(1000);
 
-  Control_Surface.loop(); // Update the Control Surface
   Control_Surface.begin();
+  Control_Surface.loop(); // Update the Control Surface
   //midi.begin(); // Initialize Control Surface
   //midi.update();
   //button.update();
