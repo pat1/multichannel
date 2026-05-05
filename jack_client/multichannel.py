@@ -5,9 +5,6 @@
 This is somewhat modeled after the "thru_client.c" example of JACK 2:
 http://github.com/jackaudio/jack2/blob/master/example-clients/thru_client.c
 
-If you have a microphone and loudspeakers connected, this might cause an
-acoustical feedback!
-
 """
 import sys
 import os
@@ -250,20 +247,41 @@ def connect_multichannel():
         pass
 
     # connect channels to streams
-    target_ports = client.get_ports(name_pattern='daber:left',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[0],target_ports[0])
-    target_ports = client.get_ports(name_pattern='daber:right',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[1],target_ports[0])
-    
-    target_ports = client.get_ports(name_pattern='dablo:left',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[2],target_ports[0])
-    target_ports = client.get_ports(name_pattern='dablo:right',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[3],target_ports[0])
-    
-    target_ports = client.get_ports(name_pattern='dabto:left',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[4],target_ports[0])
-    target_ports = client.get_ports(name_pattern='dabto:right',is_input=True, is_audio=True)
-    if(len(target_ports) >0): client.connect(client.outports[5],target_ports[0])
+    try:
+        target_ports = client.get_ports(name_pattern='daber:left',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[0],target_ports[0])
+    except:
+        pass
+
+    try:
+        target_ports = client.get_ports(name_pattern='daber:right',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[1],target_ports[0])
+    except:
+        pass
+
+    try:
+        target_ports = client.get_ports(name_pattern='dablo:left',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[2],target_ports[0])
+    except:
+        pass
+
+    try:
+        target_ports = client.get_ports(name_pattern='dablo:right',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[3],target_ports[0])
+    except:
+        pass
+
+    try:
+        target_ports = client.get_ports(name_pattern='dabto:left',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[4],target_ports[0])
+    except:
+        pass
+
+    try:
+        target_ports = client.get_ports(name_pattern='dabto:right',is_input=True, is_audio=True)
+        if(len(target_ports) >0): client.connect(client.outports[5],target_ports[0])
+    except:
+        pass
 
 
 #def connect(port):
