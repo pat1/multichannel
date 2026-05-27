@@ -89,7 +89,7 @@ def info(msg):
 
 @client.set_port_registration_callback
 def port_registration(port, register):
-    #print(repr(port), ['unregistered', 'registered'][register])
+    print(repr(port), ['unregistered', 'registered'][register])
     if (register):
         if (port.name[:3]=="dab"):
             message={"action":"dab","port":port}            
@@ -101,6 +101,11 @@ def port_registration(port, register):
         if(port.name[:3] == "a2j"):
             message={"action":"midi","port":port}
             q.put(message)
+    else:
+        if(port.name[:9] == "autoradio"):
+            message={"action":"dechannel","port":port}
+            q.put(message)
+
             
         #event.set()
             
@@ -383,6 +388,10 @@ class multichannel_status():
                 #sei canali
                 self.autoradio_multichannel = True 
 
+        elif (message["action"] == "dechannel"):
+            # if autoradio disconnect than set monochannel as default
+            self.autoradio_multichannel = False
+                
     
 with client:
     # When entering this with-statement, client.activate() is called.
