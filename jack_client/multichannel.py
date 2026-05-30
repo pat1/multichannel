@@ -102,7 +102,7 @@ def port_registration(port, register):
             message={"action":"midi","port":port}
             q.put(message)
     else:
-        if(port.name[:9] == "autoradio"):
+        if(port.name == f"autoradio:out_jackaudiosink0_{NUMTRACK}"):
             message={"action":"dechannel","port":port}
             q.put(message)
 
@@ -389,7 +389,7 @@ class multichannel_status():
                 self.autoradio_multichannel = True 
 
         elif (message["action"] == "dechannel"):
-            # if autoradio disconnect than set monochannel as default
+            # if autoradio multichannel disconnect then set monochannel as default
             self.autoradio_multichannel = False
                 
     
